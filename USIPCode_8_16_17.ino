@@ -1,4 +1,4 @@
- /*  Author: Jeff Strange,Diego Briceno & Seamus Anderson
+ /*  Author: Jeff Strange, Diego Briceno & Seamus Anderson
  *  Date:        6  July   2017
  *  Last Update: 31 August 2017
  *  Purpose: 
@@ -39,6 +39,7 @@
 
 #define SWI   4   // Logic for the switch
 #define LED   3
+#define CON   2   // Logic for the contact switch
 
      // Global Variables
 int  step_count  = 0;    // Counts the number of pulses provided to the stepper.
@@ -147,7 +148,11 @@ void SUB_RESET(int rpm=10){
   delay(10);
 
        // Iterate back to original position
-  for(i=0; i < step_count ; i++){  
+  for(i=0; i < step_count ; i++){ 
+       if(digitalRead(CON)==1){
+            step_count  = 0;
+            switch_hist = 0;
+            return;}
        digitalWrite(PUL, HIGH);
        delay(dtime); 
        digitalWrite(PUL, LOW);
@@ -197,6 +202,7 @@ void loop(){
 
        // Initial Rotation event (x * 1.8 degrees, x steps)
   if((switch_hist==0) && (switch_logic==1)){
+       SUB_RESET();
        SUB_ROTATE(25);
        delay(500);       }  // Rotate 25 steps or 45 deg, entered parameter is number of steps (n_steps)   
     
